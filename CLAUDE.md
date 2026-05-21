@@ -1,244 +1,355 @@
-# Claude Code Configuration - RuFlo V3
+# CLAUDE.md — givetoget.ai
 
-## Behavioral Rules (Always Enforced)
+> This file is read automatically by Claude Code on every session.
+> It defines the full project context, design system, conventions, and rules.
 
-- Do what has been asked; nothing more, nothing less
-- NEVER create files unless they're absolutely necessary for achieving your goal
-- ALWAYS prefer editing an existing file to creating a new one
-- NEVER proactively create documentation files (*.md) or README files unless explicitly requested
-- NEVER save working files, text/mds, or tests to the root folder
-- Never continuously check status after spawning a swarm — wait for results
-- ALWAYS read a file before editing it
-- NEVER commit secrets, credentials, or .env files
+---
 
-## File Organization
+## Project Overview
 
-- NEVER save to root folder — use the directories below
-- Use `/src` for source code files
-- Use `/tests` for test files
-- Use `/docs` for documentation and markdown files
-- Use `/config` for configuration files
-- Use `/scripts` for utility scripts
-- Use `/examples` for example code
+**givetoget.ai** is a B2B SaaS contact database exchange.
+- Upload a CSV of B2B contacts → earn 1 credit per unique new contact
+- Spend credits to download contacts filtered by vertical, seniority, location, company size
+- **Tagline:** Give contacts. Get contacts.
+- **Stage:** MVP v1
+- **Owner:** Aaron Wykoff / A. Wykoff Consulting
 
-## Project Architecture
+**GitHub:** https://github.com/awykoff/givetoget-ai
+**Vercel:** givetoget-ai.vercel.app (connected to main branch)
+**Claude Design:** https://claude.ai/design/p/f96ac40b-bae7-432e-a9fe-599c7b99b493
 
-- Follow Domain-Driven Design with bounded contexts
-- Keep files under 500 lines
-- Use typed interfaces for all public APIs
-- Prefer TDD London School (mock-first) for new code
-- Use event sourcing for state changes
-- Ensure input validation at system boundaries
+---
 
-### Project Config
+## Tech Stack
 
-- **Topology**: hierarchical-mesh
-- **Max Agents**: 15
-- **Memory**: hybrid
-- **HNSW**: Enabled
-- **Neural**: Enabled
+| Layer | Technology |
+|---|---|
+| Frontend | Next.js 15 (App Router), TypeScript, Tailwind CSS v4 |
+| Auth | Supabase Auth — email + Google OAuth |
+| Database | Supabase (Postgres 15) + RLS + triggers |
+| Storage | Supabase Storage (CSV uploads, export files) |
+| Edge Functions | Supabase Edge Functions (Deno) |
+| Orchestration | Ruflo (claude-flow v3) — MCP on port 3000 |
+| Font | DM Sans (Google Fonts) |
+| Hosting | Vercel (Hobby → Pro at launch) |
 
-## Build & Test
+---
+
+## Design System
+
+### Color Object
+
+```javascript
+const C = {
+  bg:           "#0C0C0F",
+  sidebar:      "#111115",
+  surface:      "#18181D",
+  surfaceHover: "#1E1E25",
+  border:       "rgba(255,255,255,0.07)",
+  borderHover:  "rgba(255,255,255,0.13)",
+  borderAccent: "rgba(139,92,246,0.35)",
+  text:         "#F0EEFF",
+  muted:        "#8B87A8",
+  subtle:       "#4E4A66",
+  accent:       "#8B5CF6",
+  accentHover:  "#9D71FA",
+  accentLight:  "rgba(139,92,246,0.12)",
+  accentText:   "#C4B5FD",
+  accentDark:   "#7C3AED",
+  success:      "#34D399",
+  successLight: "rgba(52,211,153,0.12)",
+  successText:  "#6EE7B7",
+  danger:       "#F87171",
+  dangerLight:  "rgba(248,113,113,0.10)",
+  warn:         "#FBBF24",
+  warnLight:    "rgba(251,191,36,0.10)",
+  warnText:     "#FDE68A",
+}
+```
+
+### Typography
+
+```
+Font:       DM Sans (Google Fonts)
+Import:     https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&display=swap
+Fallback:   -apple-system, BlinkMacSystemFont, sans-serif
+
+Display:    38px, 700 weight
+Page H1:    22px, 700 weight
+Card H2:    16px, 700 weight
+Eyebrow:    10px, 700, uppercase, 0.08em letter-spacing, color #4E4A66
+Body:       13px, 400 weight
+Body bold:  13px, 600 weight
+Caption:    11px, 400 weight
+Badge:      11px, 600 weight
+```
+
+### Layout Tokens
+
+```
+Sidebar width:    224px
+Top bar height:   52px
+Page padding:     24px
+Card radius:      10px
+Button radius:    7px
+Badge radius:     5px
+Modal radius:     14px
+Card grid gap:    10–12px
+```
+
+### Global CSS
+
+```css
+* { box-sizing: border-box; }
+body {
+  background: #0C0C0F;
+  color: #F0EEFF;
+  font-family: 'DM Sans', -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(139,92,246,0.25); border-radius: 3px; }
+::placeholder { color: #4E4A66; }
+input:focus, textarea:focus {
+  outline: none;
+  border-color: rgba(139,92,246,0.5) !important;
+  box-shadow: 0 0 0 2px rgba(139,92,246,0.12);
+}
+```
+
+---
+
+## Component Rules
+
+### Sidebar
+- Width: 224px, background: `#111115`
+- Active nav item: `rgba(139,92,246,0.12)` bg + `#C4B5FD` text + 3px purple left border
+- Nav icons: 16px, muted color inactive, accentText active
+- Logo: G mark at 28px height + "givetoget.ai" wordmark
+
+### Top Bar
+- Height: 52px, background: `#111115`
+- Credits pill: `rgba(139,92,246,0.12)` bg, purple Zap icon, `#C4B5FD` text
+- Export button: primary purple, right-aligned
+
+### Cards
+- Background: `#18181D`
+- Border: `1px solid rgba(255,255,255,0.07)`
+- Border-radius: 10px
+- NO drop shadows
+- Hover border: `rgba(255,255,255,0.13)`
+
+### Buttons
+- Primary: `background #8B5CF6`, white text, 7px radius
+- Ghost: transparent + `rgba(255,255,255,0.07)` border, white text
+- Danger: `rgba(248,113,113,0.15)` bg, `#F87171` text
+- All buttons: DM Sans 600 weight, 13px
+
+### Tables
+- Row height: 40px minimum
+- Header: 10px, 700, uppercase, `#4E4A66`, sticky
+- Row hover: `rgba(139,92,246,0.04)` bg
+- Row selected: `rgba(139,92,246,0.06)` bg
+- Checkbox: purple accent when checked
+
+### Vertical Badges
+
+```javascript
+const VERTICAL_COLORS = {
+  SaaS:         { bg: "rgba(139,92,246,0.18)",  text: "#C4B5FD" },
+  FinTech:      { bg: "rgba(52,211,153,0.15)",  text: "#6EE7B7" },
+  MarTech:      { bg: "rgba(251,191,36,0.15)",  text: "#FDE68A" },
+  "Data & AI":  { bg: "rgba(96,165,250,0.15)",  text: "#93C5FD" },
+  HRTech:       { bg: "rgba(248,113,113,0.15)", text: "#FCA5A5" },
+  HealthTech:   { bg: "rgba(52,211,153,0.12)",  text: "#6EE7B7" },
+  Other:        { bg: "rgba(255,255,255,0.07)", text: "#8B87A8" },
+}
+```
+
+### Import Status Badges
+- `+ new`:  `rgba(52,211,153,0.15)` bg, `#6EE7B7` text
+- `dedup`:  `rgba(255,255,255,0.07)` bg, `#8B87A8` text
+- `invalid`: `rgba(248,113,113,0.10)` bg, `#F87171` text
+
+---
+
+## File Structure
+
+```
+givetoget-ai/
+├── CLAUDE.md                    ← this file
+├── AGENTS.md                    ← Ruflo swarm definitions
+├── PRD.md                       ← Product Requirements Document
+├── README.md
+├── src/
+│   ├── app/                     ← Next.js App Router
+│   │   ├── (auth)/
+│   │   │   ├── login/page.tsx
+│   │   │   └── signup/page.tsx
+│   │   ├── (dashboard)/
+│   │   │   ├── layout.tsx       ← sidebar + topbar wrapper
+│   │   │   ├── page.tsx         ← dashboard home
+│   │   │   ├── contacts/page.tsx
+│   │   │   ├── import/page.tsx
+│   │   │   └── credits/page.tsx
+│   │   ├── api/
+│   │   │   └── import/
+│   │   │       └── apollo/route.ts  ← Apollo script endpoint
+│   │   └── layout.tsx
+│   ├── components/
+│   │   ├── layout/
+│   │   │   ├── Sidebar.tsx
+│   │   │   └── TopBar.tsx
+│   │   ├── dashboard/
+│   │   │   └── StatCard.tsx
+│   │   ├── contacts/
+│   │   │   ├── ContactsTable.tsx
+│   │   │   ├── FilterPanel.tsx
+│   │   │   └── ExportModal.tsx
+│   │   ├── import/
+│   │   │   ├── UploadZone.tsx
+│   │   │   └── ImportReview.tsx
+│   │   ├── credits/
+│   │   │   ├── CreditBalance.tsx
+│   │   │   └── TransactionHistory.tsx
+│   │   ├── ui/
+│   │   │   ├── Button.tsx
+│   │   │   ├── Card.tsx
+│   │   │   ├── Badge.tsx
+│   │   │   ├── Modal.tsx
+│   │   │   └── VBadge.tsx
+│   │   └── Dashboard.jsx        ← full prototype (6 screens)
+│   └── lib/
+│       ├── supabase/
+│       │   ├── client.ts
+│       │   └── server.ts
+│       └── types/
+│           └── database.types.ts
+├── supabase/
+│   ├── functions/
+│   │   ├── import-processor/
+│   │   └── export-generator/
+│   └── migrations/
+│       ├── 001_initial_schema.sql
+│       └── 002_apollo_aligned_schema.sql  ← USE THIS ONE
+├── scripts/
+│   └── apollo-to-givetoget.ts   ← Apollo contributor script
+├── public/
+│   └── images/
+│       ├── logo-white.png
+│       ├── gmark-white.png
+│       └── logo-purple.png
+└── design/
+    └── design-system.md
+```
+
+---
+
+## Database (Supabase)
+
+### Tables
+```
+workspaces              — workspace/team accounts
+workspace_members       — users within workspaces (admin/member)
+companies               — Apollo-aligned company records
+contacts                — global shared contact pool (Apollo-aligned, 60+ fields)
+imports                 — CSV import history
+exports                 — export history + download links
+export_contacts         — junction: which contacts per export
+credits_ledger          — APPEND-ONLY transaction log
+workspace_contact_access — which contacts a workspace has unlocked
+```
+
+### Critical Rules
+- `credits_ledger` is **append-only** — NEVER UPDATE or DELETE
+- `email_normalized` = LOWER(TRIM(email)) — global dedup key
+- Contact email **never returned** without credit unlock or own contribution
+- RLS enabled on **all tables**
+- Credit earn/spend via **DB triggers only** — never direct client inserts
+- Personal email domains **rejected** on import
+
+### Migration to Run
+```
+supabase/migrations/002_apollo_aligned_schema.sql
+```
+Run this in Supabase SQL Editor on a fresh project. It includes everything.
+
+---
+
+## Environment Variables
 
 ```bash
-# Build
-npm run build
-
-# Test
-npm test
-
-# Lint
-npm run lint
+# Required in Vercel + local .env.local
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_ANON_KEY=
+SUPABASE_SERVICE_ROLE_KEY=
 ```
 
-- ALWAYS run tests after making code changes
-- ALWAYS verify build succeeds before committing
+---
 
-## Security Rules
+## Agent Swarm (Ruflo)
 
-- NEVER hardcode API keys, secrets, or credentials in source files
-- NEVER commit .env files or any file containing secrets
-- Always validate user input at system boundaries
-- Always sanitize file paths to prevent directory traversal
-- Run `npx @claude-flow/cli@latest security scan` after security-related changes
+8 agents orchestrated by Ruflo (claude-flow v3), MCP running on port 3000:
 
-## Concurrency: 1 MESSAGE = ALL RELATED OPERATIONS
+| Agent | Type | Builds |
+|---|---|---|
+| Queen | coordinator | Orchestrates, prevents drift |
+| Architect | architect | Next.js structure, routing, ADRs |
+| Frontend | coder | All React components + dark theme |
+| Database | coder | Migrations, RLS, triggers |
+| Backend | coder | Edge Functions (import + export) |
+| Auth | coder | Supabase Auth, Google OAuth |
+| Tester | tester | Unit, RLS, E2E tests |
+| Docs | coder | Keeps vault + CLAUDE.md in sync |
 
-- All operations MUST be concurrent/parallel in a single message
-- Use Claude Code's Agent tool for spawning agents, not just MCP
-- ALWAYS spawn ALL agents in ONE message with full instructions via Agent tool
-- ALWAYS batch ALL file reads/writes/edits in ONE message
-- ALWAYS batch ALL Bash commands in ONE message
+See `AGENTS.md` for full definitions and launch commands.
 
-## Swarm Orchestration
-
-- MUST initialize the swarm using CLI tools when starting complex tasks
-- MUST spawn concurrent agents using Claude Code's Agent tool
-- Never use CLI tools alone for execution — Agent tool agents do the actual work
-- MUST call CLI tools AND Agent tool in ONE message for complex work
-
-### 3-Tier Model Routing (ADR-026)
-
-| Tier | Handler | Latency | Cost | Use Cases |
-|------|---------|---------|------|-----------|
-| **1** | Agent Booster (WASM) | <1ms | $0 | Simple transforms (var→const, add types) — Skip LLM |
-| **2** | Haiku | ~500ms | $0.0002 | Simple tasks, low complexity (<30%) |
-| **3** | Sonnet/Opus | 2-5s | $0.003-0.015 | Complex reasoning, architecture, security (>30%) |
-
-- For Tier 1 simple transforms, use Edit tool directly — no LLM agent needed
-
-## Swarm Configuration & Anti-Drift
-
-- ALWAYS use hierarchical topology for coding swarms
-- Keep maxAgents at 6-8 for tight coordination
-- Use specialized strategy for clear role boundaries
-- Use `raft` consensus for hive-mind (leader maintains authoritative state)
-- Run frequent checkpoints via `post-task` hooks
-- Keep shared memory namespace for all agents
-
-```bash
-npx @claude-flow/cli@latest swarm init --topology hierarchical --max-agents 8 --strategy specialized
+### Phase Delivery Order
+```
+Phase 1: Architect scaffold + Database migration + Auth pages
+Phase 2: Sidebar + TopBar + Dashboard + Credits pages
+Phase 3: Import Edge Function + Upload zone + Review screen
+Phase 4: Contacts table + Filter panel + Export modal + Export Edge Function
+Phase 5: Mobile responsive + E2E tests + Vault sync
 ```
 
-## Swarm Execution Rules
+---
 
-- ALWAYS use `run_in_background: true` for all Agent tool calls
-- ALWAYS put ALL Agent calls in ONE message for parallel execution
-- After spawning, STOP — do NOT add more tool calls or check status
-- Never poll agent status repeatedly — trust agents to return
-- When agent results arrive, review ALL results before proceeding
+## Logo Assets
 
-## V3 CLI Commands
-
-### Core Commands
-
-| Command | Subcommands | Description |
-|---------|-------------|-------------|
-| `init` | 4 | Project initialization |
-| `agent` | 8 | Agent lifecycle management |
-| `swarm` | 6 | Multi-agent swarm coordination |
-| `memory` | 11 | AgentDB memory with HNSW search |
-| `task` | 6 | Task creation and lifecycle |
-| `session` | 7 | Session state management |
-| `hooks` | 17 | Self-learning hooks + 12 workers |
-| `hive-mind` | 6 | Byzantine fault-tolerant consensus |
-
-### Quick CLI Examples
-
-```bash
-npx @claude-flow/cli@latest init --wizard
-npx @claude-flow/cli@latest agent spawn -t coder --name my-coder
-npx @claude-flow/cli@latest swarm init --v3-mode
-npx @claude-flow/cli@latest memory search --query "authentication patterns"
-npx @claude-flow/cli@latest doctor --fix
+```
+public/images/logo-white.png     — white on transparent (nav, dark bg)
+public/images/gmark-white.png    — G mark only (sidebar, favicon)
+public/images/logo-purple.png    — purple on transparent (light bg)
 ```
 
-## Available Agents (16 Roles + Custom)
+Logo colors: gradient `#4f01bc` → `#3a0189`
 
-### Core Development
-`coder`, `reviewer`, `tester`, `planner`, `researcher`
+---
 
-### Specialized
-`security-architect`, `security-auditor`, `memory-specialist`, `performance-engineer`
+## Apollo Integration
 
-### Coordination
-`hierarchical-coordinator`, `mesh-coordinator`, `adaptive-coordinator`
+**Contributor script:** `scripts/apollo-to-givetoget.ts`
+- Pulls user's existing saved contacts (zero Apollo credits)
+- Filters personal domains, normalizes seniority
+- POSTs to `POST /api/import/apollo`
+- Users earn 1 credit per unique new contact
 
-### GitHub & Repository
-`pr-manager`, `code-review-swarm`, `issue-tracker`, `release-manager`
+**Apollo column mapping:** All 65+ Contact fields + 37 Company fields mapped to schema.
+See `supabase/migrations/002_apollo_aligned_schema.sql` comments for full mapping.
 
-Any string can be used as a custom agent type — these are the typed roles with specialized behavior.
+---
 
-## Memory & Vector Search
+## Do Not
 
-### MCP Tools (use via ToolSearch to discover)
-
-| Tool | Description |
-|------|-------------|
-| `memory_store` | Store value with ONNX 384-dim vector embedding |
-| `memory_search` | Semantic vector search by query |
-| `memory_retrieve` | Get entry by key |
-| `memory_list` | List entries in namespace |
-| `memory_delete` | Delete entry |
-| `memory_import_claude` | Import Claude Code memories into AgentDB (allProjects=true for all) |
-| `memory_search_unified` | Search across ALL namespaces (Claude + AgentDB + patterns) |
-| `memory_bridge_status` | Show bridge health, vectors, SONA, intelligence |
-
-### CLI Commands
-
-```bash
-# Store with vector embedding
-npx @claude-flow/cli@latest memory store --key "pattern-auth" --value "JWT with refresh" --namespace patterns
-
-# Semantic search
-npx @claude-flow/cli@latest memory search --query "authentication patterns"
-
-# Import all Claude Code memories into AgentDB
-node .claude/helpers/auto-memory-hook.mjs import-all
-```
-
-### Claude Code ↔ AgentDB Bridge
-
-Claude Code auto-memory files (`~/.claude/projects/*/memory/*.md`) are automatically imported into AgentDB with ONNX vector embeddings on session start. Use `memory_search_unified` to search across both stores.
-
-## Key MCP Tools (314 available — use ToolSearch to discover)
-
-### Most Used Tools
-
-| Category | Tools | What They Do |
-|----------|-------|-------------|
-| **Memory** | `memory_store`, `memory_search`, `memory_search_unified` | Store/search with ONNX vector embeddings |
-| **Claude Bridge** | `memory_import_claude`, `memory_bridge_status` | Import Claude memories into AgentDB |
-| **Swarm** | `swarm_init`, `swarm_status`, `swarm_health` | Multi-agent coordination |
-| **Agents** | `agent_spawn`, `agent_list`, `agent_status` | Agent lifecycle |
-| **Hive-Mind** | `hive-mind_init`, `hive-mind_spawn`, `hive-mind_consensus` | Byzantine/Raft consensus |
-| **Hooks** | `hooks_route`, `hooks_session-start`, `hooks_post-task` | Task routing + learning |
-| **Workers** | `hooks_worker-list`, `hooks_worker-dispatch` | 12 background workers |
-| **Security** | `aidefence_scan`, `aidefence_is_safe` | Prompt injection detection |
-| **Intelligence** | `hooks_intelligence`, `neural_status` | Pattern learning + SONA |
-
-### Swarm Capabilities
-
-- **Topologies**: hierarchical (anti-drift), mesh, ring, star, adaptive
-- **Consensus**: Raft (leader-based), Byzantine (PBFT), Gossip (eventual)
-- **Hive-Mind**: Queen-led coordination with spawn, broadcast, consensus voting, shared memory
-- **12 Background Workers**: audit, optimize, testgaps, map, deepdive, document, refactor, benchmark, ultralearn, consolidate, predict, preload
-
-### Memory Capabilities
-
-- **ONNX Embeddings**: all-MiniLM-L6-v2, 384 dimensions — real neural vectors
-- **DiskANN**: SSD-friendly vector search (8,000x faster insert than HNSW, perfect recall at 1K)
-- **sql.js**: Cross-platform SQLite (WASM, no native compilation)
-- **Claude Code Bridge**: Auto-imports MEMORY.md files into AgentDB on session start
-- **Unified Search**: `memory_search_unified` searches Claude memories + AgentDB + patterns
-- **SONA Learning**: Trajectory recording → pattern extraction → file persistence
-
-### How to Discover Tools
-
-Use ToolSearch to find specific tools:
-```
-ToolSearch("memory search")     → memory_store, memory_search, memory_search_unified
-ToolSearch("swarm")             → swarm_init, swarm_status, swarm_health, swarm_shutdown
-ToolSearch("hive consensus")    → hive-mind_consensus, hive-mind_status
-ToolSearch("+aidefence")        → aidefence_scan, aidefence_is_safe, aidefence_has_pii
-```
-
-## Quick Setup
-
-```bash
-claude mcp add claude-flow -- npx -y @claude-flow/cli@latest
-npx @claude-flow/cli@latest daemon start
-npx @claude-flow/cli@latest doctor --fix
-```
-
-## Claude Code vs MCP Tools
-
-- **Claude Code Agent tool** handles execution: agents, file ops, code generation, git
-- **MCP tools** (via ToolSearch) handle coordination: swarm, memory, hooks, routing, hive-mind
-- **CLI commands** (via Bash) are the same tools with terminal output
-- Use `ToolSearch("keyword")` to discover available MCP tools
-
-## Support
-
-- Documentation: https://github.com/ruvnet/ruflo
-- Issues: https://github.com/ruvnet/ruflo/issues
+- ❌ NEVER use light or white backgrounds — all surfaces dark
+- ❌ NEVER use any accent color other than `#8B5CF6`
+- ❌ NEVER add drop shadows to cards
+- ❌ NEVER use solid color borders — always rgba ghost borders
+- ❌ NEVER UPDATE or DELETE `credits_ledger` rows
+- ❌ NEVER expose contact email without credit deduction
+- ❌ NEVER skip RLS on new tables
+- ❌ NEVER use `<form>` tags in React — use onClick handlers
+- ❌ NEVER commit `.DS_Store` files
+- ❌ NEVER use Pages Router — App Router only
