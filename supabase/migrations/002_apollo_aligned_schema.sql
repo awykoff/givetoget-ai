@@ -303,8 +303,7 @@ CREATE TABLE exports (
   created_by      UUID REFERENCES auth.users(id),
   created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   completed_at    TIMESTAMPTZ,
-  expires_at      TIMESTAMPTZ GENERATED ALWAYS AS
-                    (created_at + INTERVAL '7 days') STORED
+  expires_at      TIMESTAMPTZ
 );
 
 CREATE TABLE export_contacts (
@@ -312,6 +311,20 @@ CREATE TABLE export_contacts (
   contact_id  UUID NOT NULL REFERENCES contacts(id) ON DELETE CASCADE,
   PRIMARY KEY (export_id, contact_id)
 );
+
+
+-- Auto-set expires_at on export insert
+CREATE OR REPLACE FUNCTION set_export_expires_at()
+RETURNS TRIGGER AS $$
+BEGIN
+  NEW.expires_at = NEW.created_at + INTERVAL '7 days';
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trg_export_expires_at
+  BEFORE INSERT ON exports FOR EACH ROW
+  EXECUTE FUNCTION set_export_expires_at();
 
 CREATE INDEX idx_exports_workspace ON exports(workspace_id);
 CREATE INDEX idx_exports_created   ON exports(created_at DESC);
