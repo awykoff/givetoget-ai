@@ -1,0 +1,3 @@
+-- Private schema migration + RLS policy rewire
+-- Moves trigger functions out of public schema to prevent REST API exposure
+-- See security patches 003 for context
