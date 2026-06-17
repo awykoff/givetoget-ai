@@ -1,4 +1,4 @@
-# givetoget.ai Design System
+# give-to-get.com Design System
 
 ## Colors
 

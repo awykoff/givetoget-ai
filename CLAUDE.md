@@ -1,4 +1,4 @@
-# CLAUDE.md — givetoget.ai
+# CLAUDE.md — give-to-get.com
 
 > This file is read automatically by Claude Code on every session.
 > It defines the full project context, design system, conventions, and rules.
@@ -7,15 +7,15 @@
 
 ## Project Overview
 
-**givetoget.ai** is a B2B SaaS contact database exchange.
+**give-to-get.com** is a B2B SaaS contact database exchange.
 - Upload a CSV of B2B contacts → earn 1 credit per unique new contact
 - Spend credits to download contacts filtered by vertical, seniority, location, company size
 - **Tagline:** Give contacts. Get contacts.
 - **Stage:** MVP v1
 - **Owner:** Aaron Wykoff / A. Wykoff Consulting
 
-**GitHub:** https://github.com/awykoff/givetoget-ai
-**Vercel:** givetoget-ai.vercel.app (connected to main branch)
+**GitHub:** https://github.com/awykoff/give-to-get.com
+**Vercel:** give-to-get.com.vercel.app (connected to main branch)
 **Claude Design:** https://claude.ai/design/p/f96ac40b-bae7-432e-a9fe-599c7b99b493
 
 ---
@@ -126,7 +126,7 @@ input:focus, textarea:focus {
 - Width: 224px, background: `#111115`
 - Active nav item: `rgba(139,92,246,0.12)` bg + `#C4B5FD` text + 3px purple left border
 - Nav icons: 16px, muted color inactive, accentText active
-- Logo: G mark at 28px height + "givetoget.ai" wordmark
+- Logo: G mark at 28px height + "give-to-get.com" wordmark
 
 ### Top Bar
 - Height: 52px, background: `#111115`
@@ -177,7 +177,7 @@ const VERTICAL_COLORS = {
 ## File Structure
 
 ```
-givetoget-ai/
+give-to-get.com/
 ├── CLAUDE.md                    ← this file
 ├── AGENTS.md                    ← Ruflo swarm definitions
 ├── PRD.md                       ← Product Requirements Document

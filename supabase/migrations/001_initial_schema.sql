@@ -1,4 +1,4 @@
--- givetoget.ai — Initial Schema
+-- give-to-get.com — Initial Schema
 -- Run this in Supabase SQL Editor or via: supabase db push
 
 -- Extensions

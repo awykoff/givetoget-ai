@@ -1,6 +1,6 @@
-# AGENTS.md — givetoget.ai
+# AGENTS.md — give-to-get.com
 
-> This file is read by Ruflo (claude-flow) to define the agent swarm for the givetoget.ai project.
+> This file is read by Ruflo (claude-flow) to define the agent swarm for the give-to-get.com project.
 > Ruflo reads this alongside CLAUDE.md on every swarm initialization.
 > All agents operate under the design system and conventions in CLAUDE.md.
 
@@ -313,7 +313,7 @@ npx claude-flow@v3alpha agent spawn --type coder       --name docs
 
 # Start swarm with objective
 npx claude-flow@v3alpha swarm start \
-  --objective "Build givetoget.ai: a B2B contact database exchange. Read CLAUDE.md and AGENTS.md for full spec. Start with auth + dashboard layout, then contacts page, then import flow, then credits." \
+  --objective "Build give-to-get.com: a B2B contact database exchange. Read CLAUDE.md and AGENTS.md for full spec. Start with auth + dashboard layout, then contacts page, then import flow, then credits." \
   --strategy development
 ```
 

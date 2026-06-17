@@ -1,4 +1,4 @@
-# Product Requirements Document — givetoget.ai
+# Product Requirements Document — give-to-get.com
 
 **Version:** 1.0  
 **Date:** April 26, 2026  
@@ -17,7 +17,7 @@ There is no platform that lets teams trade the data they have for the data they 
 
 ## 2. Solution
 
-**givetoget.ai** is a B2B contact database exchange. Upload your contact list, earn credits for every unique new contact you contribute to the shared pool, and spend credits to download contacts filtered by vertical, seniority, location, and company size.
+**give-to-get.com** is a B2B contact database exchange. Upload your contact list, earn credits for every unique new contact you contribute to the shared pool, and spend credits to download contacts filtered by vertical, seniority, location, and company size.
 
 The more teams contribute, the more valuable the database becomes for everyone.
 

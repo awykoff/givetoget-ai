@@ -1,4 +1,4 @@
--- givetoget.ai — Schema v2
+-- give-to-get.com — Schema v2
 -- Apollo-aligned contacts + companies tables
 -- Run in Supabase SQL Editor or via: supabase db push
 
