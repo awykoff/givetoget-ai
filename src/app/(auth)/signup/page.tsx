@@ -122,7 +122,7 @@ export default function SignupPage() {
 
         {/* Error */}
         {error && (
-          <div style={{ background: "rgba(248,113,113,0.10)", border: "1px solid rgba(248,113,113,0.2)", borderRadius: "7px", padding: "10px 12px", color: "#F87171", fontSize: "12px", marginBottom: "16px" }}>
+          <div data-testid="error-banner" style={{ background: "rgba(248,113,113,0.10)", border: "1px solid rgba(248,113,113,0.2)", borderRadius: "7px", padding: "10px 12px", color: "#F87171", fontSize: "12px", marginBottom: "16px" }}>
             {error}
           </div>
         )}
